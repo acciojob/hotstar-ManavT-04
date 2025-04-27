@@ -8,6 +8,8 @@ import com.driver.repository.WebSeriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class WebSeriesService {
 
@@ -24,7 +26,25 @@ public class WebSeriesService {
         //use function written in Repository Layer for the same
         //Dont forget to save the production and webseries Repo
 
-        return null;
+        ProductionHouse productionHouse = productionHouseRepository.findById(webSeriesEntryDto.getProductionHouseId()).orElse(null);
+        if (productionHouse == null) return -1;
+
+        WebSeries webSeries = new WebSeries();
+        webSeries.setSeriesName(webSeriesEntryDto.getSeriesName());
+        webSeries.setAgeLimit(webSeriesEntryDto.getAgeLimit());
+        webSeries.setSubscriptionType(webSeriesEntryDto.getSubscriptionType());
+        webSeries.setRating(webSeriesEntryDto.getRating());
+        webSeries.setProductionHouse(productionHouse);
+
+        webSeriesRepository.save(webSeries);
+
+        // Update production house rating
+        List<WebSeries> seriesList = webSeriesRepository.findByProductionHouse(productionHouse);
+        double avgRating = seriesList.stream().mapToDouble(WebSeries::getRating).average().orElse(0.0);
+        productionHouse.setRatings(avgRating);
+        productionHouseRepository.save(productionHouse);
+
+        return webSeries.getId();
     }
 
 }

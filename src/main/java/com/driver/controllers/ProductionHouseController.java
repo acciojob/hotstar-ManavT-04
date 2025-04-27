@@ -18,13 +18,10 @@ public class ProductionHouseController {
     @Autowired
     ProductionHouseService productionHouseService;
 
-
     @PostMapping("/add")
     public Integer addProductionHouseInfoIntoDb(@RequestBody ProductionHouseEntryDto productionHouseEntryDto){
-
         //Default ratings of the ProductionHouse should be 0
         return productionHouseService.addProductionHouseToDb(productionHouseEntryDto);
-
     }
 
 }
